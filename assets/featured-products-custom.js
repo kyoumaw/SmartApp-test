@@ -15,6 +15,9 @@ async function onDocumentClick(event) {
     return;
   }
 
+  setButtonLoading(button, true);
+  setButtonLabel(button, 'Added');
+
   try {
     const response = await fetch(getAddToCartUrl(), {
       method: 'POST',
@@ -33,13 +36,51 @@ async function onDocumentClick(event) {
     if (!response.ok || cartData.status) {
       throw new Error(cartData.description || cartData.errors || cartData.message || 'Add to cart failed');
     }
+
+    updateCartBubble(cartData);
+
+    setButtonLabel(button, 'Add more');
   } catch (error) {
+    setButtonLabel(button, 'Add to Cart');
     console.error(error);
+  } finally {
+    setButtonLoading(button, false);
   }
 }
 
 function getVariantId(button) {
   return button.dataset.variantId;
+}
+
+function updateCartBubble(cartData) {
+  const currentBubble = document.getElementById(CART_BUBBLE_ID);
+  const sectionHtml = cartData.sections?.[CART_BUBBLE_ID];
+
+  if (!currentBubble || !sectionHtml) return;
+
+  const parsed = new DOMParser().parseFromString(sectionHtml, 'text/html');
+  const newBubble = parsed.getElementById(CART_BUBBLE_ID) || parsed.querySelector('.shopify-section');
+
+  if (newBubble) {
+    currentBubble.innerHTML = newBubble.innerHTML;
+  }
+}
+
+function setButtonLoading(button, isLoading) {
+  button.toggleAttribute('aria-busy', isLoading);
+
+  if (isLoading) {
+    button.disabled = true;
+    button.setAttribute('aria-disabled', 'true');
+    return;
+  }
+
+  button.disabled = false;
+  button.removeAttribute('aria-disabled');
+}
+
+function setButtonLabel(button, label) {
+  button.textContent = label;
 }
 
 function getAddToCartUrl() {
