@@ -1,5 +1,16 @@
 {
+  "name": "custom-featured-products",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "vite build"
+  },
   "dependencies": {
     "@shopify/storefront-api-client": "^1.0.10"
+  },
+  "devDependencies": {
+    "fast-glob": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.0"
   }
 }
