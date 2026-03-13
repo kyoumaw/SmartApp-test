@@ -12,6 +12,6 @@
   ## What can be improved
   - Add better error handling and success messages for users
   - Add better UI handling for button
-
+  - Hardcoded UI text content should be replaced with translation keys
   ## For cart selector i used "cart-icon-bubble" because it is used in Dawn theme default "cart-drawer.js" for rendering
 
