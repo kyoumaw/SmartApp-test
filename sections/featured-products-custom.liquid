@@ -12,11 +12,20 @@
           {% assign product = block.settings.product %}
 
           {% if product != blank %}
-          {% assign current_variant = product.selected_or_first_available_variant %}
+            {% assign current_variant = product.selected_or_first_available_variant %}
+            {% assign is_on_sale = false %}
+
+            {% if current_variant.compare_at_price > current_variant.price %}
+              {% assign is_on_sale = true %}
+            {% endif %}
 
             <div class="featured-products-custom-card" {{ block.shopify_attributes }}>
                 {% if product.featured_image %}
                   <div class="featured-products-custom-card__media">
+                    {% if section.settings.show_sale_badge and is_on_sale %}
+                      <span class="featured-products-custom__badge">Sale</span>
+                    {% endif %}
+
                     {{
                       product.featured_image
                       | image_url: width: 300
@@ -27,8 +36,31 @@
 
                 <h3>{{ product.title }}</h3>
 
-                <p>{{ current_variant.price | money }}</p>
+                {% if is_on_sale %}
+                  <p>
+                    <span class="featured-products-custom__price featured-products-custom__price--sale">
+                      {{ current_variant.price | money }}
+                    </span>
+                    <s class="featured-products-custom__compare-price">
+                      {{ current_variant.compare_at_price | money }}
+                    </s>
+                  </p>
+                {% else %}
+                  <p>{{ current_variant.price | money }}</p>
+                {% endif %}
 
+                <button
+                  type="button"
+                  class="button featured-products-custom__add-to-cart"
+                  data-variant-id="{{ current_variant.id }}"
+                  {% unless current_variant.available %}disabled{% endunless %}
+                >
+                  {% if current_variant.available %}
+                    Add to cart
+                  {% else %}
+                    Sold out
+                  {% endif %}
+                </button>
             </div>
           {% endif %}
         {% endfor %}
