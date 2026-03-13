@@ -1,0 +1,39 @@
+{{ 'section-featured-products-custom.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'featured-products-custom.js' | asset_url }}" defer="defer"></script>
+
+<div class="page-width">
+    {% if section.settings.heading != blank %}
+      <h2>{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="featured-products-custom">
+        {% for block in section.blocks %}
+          {% assign product = block.settings.product %}
+
+          {% if product != blank %}
+          {% assign current_variant = product.selected_or_first_available_variant %}
+
+            <div class="featured-products-custom-card" {{ block.shopify_attributes }}>
+                {% if product.featured_image %}
+                  <div class="featured-products-custom-card__media">
+                    {{
+                      product.featured_image
+                      | image_url: width: 300
+                      | image_tag: loading: 'lazy', alt: product.title
+                    }}
+                  </div>
+                {% endif %}
+
+                <h3>{{ product.title }}</h3>
+
+                <p>{{ current_variant.price | money }}</p>
+
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>Add product blocks in the theme editor.</p>
+    {% endif %}
+</div>
